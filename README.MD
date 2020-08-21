@@ -1,10 +1,7 @@
 
 # whatsapp-node-api 
 
-  [![Support me on Patreon](https://user-images.githubusercontent.com/6497827/53698102-4af3f400-3dfe-11e9-9749-4104ceb6ea3c.png)](https://www.patreon.com/pranavms)  [![PayPal](https://user-images.githubusercontent.com/6497827/53698092-42032280-3dfe-11e9-8054-1597c62d344e.png)](https://www.paypal.me/pranavms1)
-
-
-> A simple NodeJS Wrapper for [whatsapp-web.js by pedroslopez](https://github.com/pedroslopez/whatsapp-web.js)
+> Un contenedor de NodeJS simple para [whatsapp-web.js by pedroslopez](https://github.com/pedroslopez/whatsapp-web.js)
 
   
 
@@ -22,18 +19,11 @@
 
 -  [puppeteer](https://github.com/GoogleChrome/puppeteer)
 
+-  [mssql](https://github.com/tediousjs/node-mssql)
 
 ## [API Doc](https://github.com/pranavms13/whatsapp-node-api/blob/master/APIDOC.MD)
   
-
-## [](https://github.com/pranavms13/whatsapp-node-api#why)Why?
-
-  
-
-The main reason I decided to build this is that there are many developers who want to play around with Whatsapp API and use them in personal applications before getting/purchasing a Whatsapp Business Account API officially from Whatsapp.
-
-  
-
+ 
 ## [](https://github.com/pranavms13/whatsapp-node-api#goals)Goals
 
   
