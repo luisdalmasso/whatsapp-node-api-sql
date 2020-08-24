@@ -1,5 +1,7 @@
 {
     "port":5000,
+    "pathmedia":"./components/media/",
+    "nrotel":"549261XXXXXXX",
     "webhook":{
         "enabled":false,
         "path":""
