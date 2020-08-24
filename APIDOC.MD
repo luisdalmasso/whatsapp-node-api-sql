@@ -38,6 +38,20 @@
 ``GET : /chat/getchats``
 >Returns an Array of all Chats
 
+<hr>
+
+<u>Get Messages</u>
+``GET : /chat/getmessages/<last>``
+>Returns an Array of all last Messages
+
+<u>Get Messages by Id</u>
+``GET : /chat/getmessagebyid/<chatid>``
+>Returns an Array of all last Messages in the chatid
+
+<u>Get TraeAdjunto</u>
+``GET : /chat/Traeadjunto/<idmsg>``
+>Download Multimedia file with messageid
+
 
 ## Group Chat
 <u>Sending Messages to Group</u>
