@@ -48,8 +48,8 @@
 ``GET : /chat/getmessagebyid/<chatid>``
 >Returns an Array of all last Messages in the chatid
 
-<u>Get TraeAdjunto</u>
-``GET : /chat/Traeadjunto/<idmsg>``
+<u>Get getadjunto</u>
+``GET : /chat/getAdjunto/<idmsg>``
 >Download Multimedia file with messageid
 
 
