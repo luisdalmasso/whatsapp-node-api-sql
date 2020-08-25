@@ -1,0 +1,11 @@
+{
+    "server": '192.168.100.5',
+    "database": 'ssalud',
+    "user": 'websis',
+    "password": '123456',
+    "port": 1433,
+    "options": {
+        "encrypt": false ,
+        "enableArithAbort": true
+    }
+}
