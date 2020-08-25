@@ -13,7 +13,7 @@ function timeConverter(UNIX_timestamp){
     return time;
   }
 
-
+var moment = require('moment');
 const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require('fs');
@@ -22,11 +22,11 @@ const shelljs = require('shelljs');
 var limit=100
 const sql = require('mssql');
 var configsql = {
-    server: 'desarrollo2012',
+    server: '192.168.30.10',
     database: 'ssalud',
     user: 'websis',
     password: '123456',
-    port: 1433,
+    port: 1467,
     options: {
         encrypt: false ,
         enableArithAbort: true
@@ -71,7 +71,7 @@ client.on('authenticated', (session) => {
             request.query(ccmd2, function (err, recordset) {
                 if (err) console.log(err)
                                   // console.log(recordset)  
-                    if (recordset.recordset[0] == undefined || recordset.recordset[0] == '') {
+                    if (recordset == undefined || recordset.recordset[0] == '') {
                     if (config.nrotel != undefined ) {
                         ccmd2 = "SET QUOTED_IDENTIFIER OFF  exec [dbo].[wa_alta_dispo]  '"+session.WABrowserId.replace(/"/gi,'')+"','"+config.nrotel.toString()+"'";        
                        // console.log(ccmd2)
@@ -111,17 +111,18 @@ client.on('message', async msg => {
         attachmentData = {};
         if (msg.hasMedia ) {
             const attachmentData = await msg.downloadMedia();    
-            if (config.pathmedia != "" ) { 
-                var FilePath= attachmentData.filename == undefined ? JSON.stringify(msg.id.id) : attachmentData.filename ;
-                aext = attachmentData.mimetype.split('/')
-                sext = aext[1].includes('ogg') ? '.ogg' : '.'+aext[1]
-                FilePath = config.pathmedia+FilePath.replace(/"/gi,'')+sext
-                console.log(FilePath, attachmentData.mimetype);
-                await fs.writeFileSync(FilePath, attachmentData.data, 'base64'); 
-            } else { 
-                console.log('no se guarda multimedia');
-            }            
+    //         if (config.pathmedia != "" ) { 
+    //             var FilePath= attachmentData.filename == undefined ? JSON.stringify(msg.id.id) : attachmentData.filename ;
+    //             aext = attachmentData.mimetype.split('/')
+    //             sext = aext[1].includes('ogg') ? '.ogg' : '.'+aext[1]
+    //             FilePath = config.pathmedia+FilePath.replace(/"/gi,'')+sext
+    //             console.log(FilePath, attachmentData.mimetype);
+    //             await fs.writeFileSync(FilePath, attachmentData.data, 'base64'); 
+    //         } else { 
+    //             console.log('no se guarda multimedia');
+    //         }            
             // UPDATE
+	   if (attachmentData.mimetype != 'video/mp4') {
            ccmd2 = "SET QUOTED_IDENTIFIER OFF  exec [dbo].[wa_mensaje_media] ";
            ccmd2 =  ccmd2+JSON.stringify(msg.id.id)+',"'+attachmentData.data+'","'+attachmentData.mimetype+'","'+dispositivo+'"';    
            sql.connect(configsql, function (err) {
@@ -131,6 +132,7 @@ client.on('message', async msg => {
 //                    console.log(recordset)     
            });
            }); 
+        } 
         } 
         if( msg.type = "sticker") {
           //  console.log('MESSAGE RECEIVED', msg);
@@ -145,12 +147,14 @@ client.on('message', async msg => {
         cquien=  JSON.stringify(msg.author).split("@")    
         };    
         cchat=JSON.stringify(msg.id.remote).split("@") 
-        ccmd = ccmd +"'"+ cbody+"' , '"+JSON.stringify(msg.ack)+"' ,'"+cquien[0].replace(/"/gi,'')+"',"+JSON.stringify(msg.id.id)+","+JSON.stringify(msg.type)+",'"+cchat[0].replace(/"/gi,'')+"','"  +timeConverter(JSON.stringify(msg.timestamp))+"','"+dispositivo+"'"
-        //console.log(ccmd)
+	    var fecha = moment(timeConverter(JSON.stringify(msg.timestamp)),'DD/MM/YYYY HH:mm:ss').subtract(16600, 'seconds').format('YYYY/MM/DD HH:mm:ss')
+        ccmd = ccmd +"'"+ cbody+"' , '"+JSON.stringify(msg.ack)+"' ,'"+cquien[0].replace(/"/gi,'')+"',"+JSON.stringify(msg.id.id)+","+JSON.stringify(msg.type)+",'"+cchat[0].replace(/"/gi,'')+"',"  +JSON.stringify(msg.timestamp)+",'"+dispositivo+"'"
+	console.log(JSON.stringify(msg.timestamp))
+        console.log(ccmd)
         sql.connect(configsql, function (err) {
         var request = new sql.Request();
         request.query(ccmd, function (err, recordset) {
-        if (err) console.log(err)
+        // if (err) console.log(err)
             //console.log(recordset)    
         });     
      });
