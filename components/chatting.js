@@ -101,7 +101,8 @@ router.get('/getchatbyid/:phone', async (req,res) => {
         res.send({status:"error",message:"please enter valid phone number"});
     }else{
         client.getChatById(phone+"@c.us").then((chat) => {
-            res.send({ status:"success", message: chat});
+            res.send({ status: "success", message: chat });
+            console.log(chat)
         }).catch(() => {
             console.error("getchaterror")
             res.send({status:"error",message:"getchaterror"})
@@ -162,6 +163,40 @@ router.get('/getmessagesbyid/:chatid', async (req,res) => {
         });
     };
 });
+
+
+router.get('/getmensajesbyid/:phone', async (req, res) => {
+    try
+    { let phone = req.params.phone;
+    if (phone == undefined) {
+        res.send({ status: "error", message: "please enter valid phone number" });
+    } else {
+        let elchat = await client.getChatById(phone + "@c.us");
+        let mmsgs = await elchat.fetchMessages({ limit: 200 });  
+        res.send({ status: "success", message: mmsgs });
+        //elchat.then(fetchMessages({ limit: 500 }).then(chat) => {
+        //  res.send({ status: "success", message: chat });
+        //    console.log(chat)
+        //}).catch(() => {
+        //    console.error("getchaterror")
+        //   res.send({ status: "error", message: "getchaterror" })
+        //});
+        //client.getChatById(phone + "@c.us").then((chat) => {
+        //    res.send({ status: "success", message: chat });
+        //    console.log(chat)
+        //}).catch(() => {
+        //    console.error("getchaterror")
+        //    res.send({ status: "error", message: "getchaterror" })
+        //})
+    }
+    }
+    catch{ 
+        res.send({ status: "error", message: "getchaterror" })
+    }
+});
+
+
+
 
 router.get('/getadjunto/:messageid', async (req,res) => {
     let messageid = req.params.messageid;

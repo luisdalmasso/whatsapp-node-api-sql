@@ -1,9 +1,10 @@
 {
-    "port":5000,
-    "pathmedia":"./components/media/",
-    "nrotel":"549261XXXXXXX",
-    "webhook":{
-        "enabled":false,
-        "path":""
-    }
+  "port": 5000,
+  "pathmedia": "./components/media/",
+  "sqlmedia": "S",
+  "nrotel": "5492616184282",
+  "webhook": {
+    "enabled": false,
+    "path": ""
+  }
 }

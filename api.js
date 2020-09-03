@@ -11,7 +11,28 @@ function timeConverter(UNIX_timestamp){
     
     var time = month + '/' + date + '/' + year + ' ' + hour + ':' + min + ':' + sec ;
     return time;
-  }
+}
+
+
+function GuardaMensaje(msg) {
+
+ccmd = "SET QUOTED_IDENTIFIER OFF  exec [dbo].[wa_mensaje_nuevo] ";
+var cbody = JSON.stringify(msg.body);
+cbody = cbody.replace(/"/gi, '');
+if (msg.author == undefined || JSON.stringify(msg.author) == 'status@broadcast') {
+    cquien = JSON.stringify(msg.from).split("@");
+} else {
+    cquien = JSON.stringify(msg.author).split("@")
+};
+var cchat = JSON.stringify(msg.id.remote).split("@");
+var fecha = moment(timeConverter(JSON.stringify(msg.timestamp)), 'DD/MM/YYYY HH:mm:ss').subtract(16600, 'seconds').format('YYYY/MM/DD HH:mm:ss')
+ccmd = ccmd + "'" + cbody + "' , '" + JSON.stringify(msg.ack) + "' ,'" + cquien[0].replace(/"/gi, '') + "'," + JSON.stringify(msg.id.id) + "," + JSON.stringify(msg.type) + ",'" + cchat[0].replace(/"/gi, '') + "'," + JSON.stringify(msg.timestamp) + ",'" + dispositivo + "'";
+sql.connect(configsql, function (err) {
+    var request = new sql.Request();
+    request.query(ccmd, function (err, recordset) { });
+});
+
+};
 
 var moment = require('moment');
 const express = require("express");
@@ -22,11 +43,11 @@ const shelljs = require('shelljs');
 var limit=100
 const sql = require('mssql');
 var configsql = {
-    server: '192.168.30.10',
+    server: 'desarrollo2012',
     database: 'ssalud',
     user: 'websis',
     password: '123456',
-    port: 1467,
+    port: 1433,
     options: {
         encrypt: false ,
         enableArithAbort: true
@@ -107,59 +128,69 @@ client.on('ready', () => {
 });
 
 client.on('message', async msg => {   
-        //console.log('MESSAGE RECEIVED', msg);
-        attachmentData = {};
-        if (msg.hasMedia ) {
-            const attachmentData = await msg.downloadMedia();    
-    //         if (config.pathmedia != "" ) { 
-    //             var FilePath= attachmentData.filename == undefined ? JSON.stringify(msg.id.id) : attachmentData.filename ;
-    //             aext = attachmentData.mimetype.split('/')
-    //             sext = aext[1].includes('ogg') ? '.ogg' : '.'+aext[1]
-    //             FilePath = config.pathmedia+FilePath.replace(/"/gi,'')+sext
-    //             console.log(FilePath, attachmentData.mimetype);
-    //             await fs.writeFileSync(FilePath, attachmentData.data, 'base64'); 
-    //         } else { 
-    //             console.log('no se guarda multimedia');
-    //         }            
-            // UPDATE
-	   if (attachmentData.mimetype != 'video/mp4') {
-           ccmd2 = "SET QUOTED_IDENTIFIER OFF  exec [dbo].[wa_mensaje_media] ";
-           ccmd2 =  ccmd2+JSON.stringify(msg.id.id)+',"'+attachmentData.data+'","'+attachmentData.mimetype+'","'+dispositivo+'"';    
-           sql.connect(configsql, function (err) {
-           var request = new sql.Request();
-           request.query(ccmd2, function (err, recordset) {
-                if (err) console.log(err)
-//                    console.log(recordset)     
-           });
-           }); 
-        } 
-        } 
-        if( msg.type = "sticker") {
-          //  console.log('MESSAGE RECEIVED', msg);
-        };
         //INSERT        
-        ccmd = "SET QUOTED_IDENTIFIER OFF  exec [dbo].[wa_mensaje_nuevo] ";
-        var cbody =JSON.stringify(msg.body);
-        cbody = cbody.replace(/"/gi,'')
-        if(msg.author == undefined || JSON.stringify(msg.author) == 'status@broadcast' ){
-        cquien=  JSON.stringify(msg.from).split("@") 
-        } else {
-        cquien=  JSON.stringify(msg.author).split("@")    
-        };    
-        cchat=JSON.stringify(msg.id.remote).split("@") 
-	    var fecha = moment(timeConverter(JSON.stringify(msg.timestamp)),'DD/MM/YYYY HH:mm:ss').subtract(16600, 'seconds').format('YYYY/MM/DD HH:mm:ss')
-        ccmd = ccmd +"'"+ cbody+"' , '"+JSON.stringify(msg.ack)+"' ,'"+cquien[0].replace(/"/gi,'')+"',"+JSON.stringify(msg.id.id)+","+JSON.stringify(msg.type)+",'"+cchat[0].replace(/"/gi,'')+"',"  +JSON.stringify(msg.timestamp)+",'"+dispositivo+"'"
-	console.log(JSON.stringify(msg.timestamp))
-        console.log(ccmd)
-        sql.connect(configsql, function (err) {
-        var request = new sql.Request();
-        request.query(ccmd, function (err, recordset) {
-        // if (err) console.log(err)
-            //console.log(recordset)    
-        });     
-     });
-     
-})
+        //IattachmentData = {};
+    const attachmentData = await msg.downloadMedia();
+
+          
+// UPDATE
+
+    if (msg.hasMedia) {
+        if (config.pathmedia != "") {
+            var FilePath = attachmentData.filename == undefined ? JSON.stringify(msg.id.id) : attachmentData.filename;
+            aext = attachmentData.mimetype.split('/')
+            sext = aext[1].includes('ogg') ? '.ogg' : '.' + aext[1]
+            FilePath = config.pathmedia + FilePath.replace(/"/gi, '') + sext
+            console.log(FilePath, attachmentData.mimetype);
+            await fs.writeFileSync(FilePath, attachmentData.data, 'base64');
+        };
+        if (config.sqlmedia = "S") {
+            ccmd2 = "SET QUOTED_IDENTIFIER OFF  exec [dbo].[wa_mensaje_media] ";
+            ccmd2 = ccmd2 + JSON.stringify(msg.id.id) + ',"' + attachmentData.data + '","' + attachmentData.mimetype + '","' + dispositivo + '"';
+            sql.connect(configsql, function (err) {
+                var request = new sql.Request();
+                request.query(ccmd2, function (err, recordset) {
+                    if (err) console.log(err)
+                });
+            });
+        };
+    };
+        GuardaMensaje(msg);
+        
+        let elchat = JSON.stringify(msg.from).replace(/"/gi, ''); //  '5492615393332@c.us'  JSON.stringify(msg.from)
+        let mchat1 = await client.getChatById(elchat);
+        let mmsgs = await mchat1.fetchMessages({ limit: 200 });   // lee los ultimos 200 mensajes del chat
+        console.log(mmsgs.length)
+        var i;
+        for (i = 0; i < mmsgs.length; i++) {
+            msg1 = mmsgs[i];
+            GuardaMensaje(msg1);
+            if (msg1.hasMedia) {
+                const attachmentData = await msg.downloadMedia();
+                if (msg.hasMedia) {
+                    if (config.pathmedia != "") {
+                        var FilePath = attachmentData.filename == undefined ? JSON.stringify(msg.id.id) : attachmentData.filename;
+                        aext = attachmentData.mimetype.split('/')
+                        sext = aext[1].includes('ogg') ? '.ogg' : '.' + aext[1]
+                        FilePath = config.pathmedia + FilePath.replace(/"/gi, '') + sext
+                        console.log(FilePath, attachmentData.mimetype);
+                        await fs.writeFileSync(FilePath, attachmentData.data, 'base64');
+                    };
+                    if (config.sqlmedia = "S") {
+                    ccmd2 = "SET QUOTED_IDENTIFIER OFF  exec [dbo].[wa_mensaje_media] ";
+                    ccmd2 = ccmd2 + JSON.stringify(msg.id.id) + ',"' + attachmentData.data + '","' + attachmentData.mimetype + '","' + dispositivo + '"';
+                    sql.connect(configsql, function (err) {
+                        var request = new sql.Request();
+                        request.query(ccmd2, function (err, recordset) {
+                            if (err) console.log(err)
+                        });
+                    });
+                    };
+                };
+            }; 
+         }; 
+ });  
+
 
 client.initialize();
 
